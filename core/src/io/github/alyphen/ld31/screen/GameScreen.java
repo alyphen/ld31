@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.utils.Array;
 import io.github.alyphen.ld31.LD31;
 import io.github.alyphen.ld31.action.*;
+import io.github.alyphen.ld31.message.AnswerListener;
 import io.github.alyphen.ld31.message.Message;
 import io.github.alyphen.ld31.message.Question;
 import io.github.alyphen.ld31.objects.GameObject;
@@ -235,23 +236,21 @@ public class GameScreen implements Screen {
                 new SpeechAction(erica, "(You see, because of what I do, there's a lot of people who would rather not have me around.)"),
                 new SpeechAction(erica, "(While my actions may be to the benefit of my country, some don't see it that way.)"),
                 new NarrativeAction(this, "*There comes a knocking at the door.*"),
-                new QuestionAction(
-                        this,
-                        "Do you answer?",
-                        "Yes",
-                        "Yes, but leave it on latch",
-                        "No"
-                ).addListener(answerIndex -> {
-                    switch (answerIndex) {
-                        case 0:
-                            eventQueue.addEvent(createEvent2_1());
-                            break;
-                        case 1:
-                            eventQueue.addEvent(createEvent2_2());
-                            break;
-                        case 2:
-                            eventQueue.addEvent(createEvent2_3());
+                new QuestionAction(this, "Do you answer?", "Yes", "Yes, but leave it on latch", "No").addListener(new AnswerListener() {
+                    @Override
+                    public void onAnswer(int answerIndex) {
+                        switch (answerIndex) {
+                            case 0:
+                                eventQueue.addEvent(createEvent2_1());
+                                break;
+                            case 1:
+                                eventQueue.addEvent(createEvent2_2());
+                                break;
+                            case 2:
+                                eventQueue.addEvent(createEvent2_3());
+                        }
                     }
+
                 })
         ));
     }
@@ -285,17 +284,20 @@ public class GameScreen implements Screen {
                         "If you don't mind my asking, what would you be using them for?",
                         "Make up a business-related matter",
                         "Explain they piqued your curiosity",
-                        "Tell him that your reasoning is confidential").addListener(answerIndex -> {
-                    switch (answerIndex) {
-                        case 0:
-                            eventQueue.addEvent(random.nextBoolean() ? createEvent3_1() : createEvent3_2());
-                            break;
-                        case 1:
-                            eventQueue.addEvent(createEvent3_2());
-                            break;
-                        case 2:
-                            eventQueue.addEvent(createEvent3_3());
-                            break;
+                        "Tell him that your reasoning is confidential").addListener(new AnswerListener() {
+                    @Override
+                    public void onAnswer(int answerIndex) {
+                        switch (answerIndex) {
+                            case 0:
+                                eventQueue.addEvent(random.nextBoolean() ? GameScreen.this.createEvent3_1() : GameScreen.this.createEvent3_2());
+                                break;
+                            case 1:
+                                eventQueue.addEvent(GameScreen.this.createEvent3_2());
+                                break;
+                            case 2:
+                                eventQueue.addEvent(GameScreen.this.createEvent3_3());
+                                break;
+                        }
                     }
                 })
         ));
@@ -319,17 +321,20 @@ public class GameScreen implements Screen {
                         vincent,
                         "(In a hushed tone) May I request the reasoning behind your request, Miss?",
                         "Make up a business-related matter", "Explain that they piqued your curiosity",
-                        "Tell him that your reasoning is confidential").addListener(answerIndex -> {
-                    switch (answerIndex) {
-                        case 0:
-                            eventQueue.addEvent(random.nextInt(100) < 25 ? createEvent3_1() : createEvent3_2());
-                            break;
-                        case 1:
-                            eventQueue.addEvent(random.nextBoolean() ? createEvent3_2() : createEvent3_3());
-                            break;
-                        case 2:
-                            eventQueue.addEvent(random.nextBoolean() ? createEvent3_3() : createEvent3_4());
-                            break;
+                        "Tell him that your reasoning is confidential").addListener(new AnswerListener() {
+                    @Override
+                    public void onAnswer(int answerIndex) {
+                        switch (answerIndex) {
+                            case 0:
+                                eventQueue.addEvent(random.nextInt(100) < 25 ? GameScreen.this.createEvent3_1() : GameScreen.this.createEvent3_2());
+                                break;
+                            case 1:
+                                eventQueue.addEvent(random.nextBoolean() ? GameScreen.this.createEvent3_2() : GameScreen.this.createEvent3_3());
+                                break;
+                            case 2:
+                                eventQueue.addEvent(random.nextBoolean() ? GameScreen.this.createEvent3_3() : GameScreen.this.createEvent3_4());
+                                break;
+                        }
                     }
                 })
         ));
@@ -344,17 +349,20 @@ public class GameScreen implements Screen {
                         "Open the envelope",
                         "Leave the envelope until later",
                         "Decide the delivery is suspicious and throw the envelope away"
-                ).addListener(answerIndex -> {
-                    switch (answerIndex) {
-                        case 0:
-                            eventQueue.addEvent(createEvent3_5());
-                            break;
-                        case 1:
-                            eventQueue.addEvent(createEvent3_6());
-                            break;
-                        case 2:
-                            eventQueue.addEvent(createEvent3_7());
-                            break;
+                ).addListener(new AnswerListener() {
+                    @Override
+                    public void onAnswer(int answerIndex) {
+                        switch (answerIndex) {
+                            case 0:
+                                eventQueue.addEvent(GameScreen.this.createEvent3_5());
+                                break;
+                            case 1:
+                                eventQueue.addEvent(GameScreen.this.createEvent3_6());
+                                break;
+                            case 2:
+                                eventQueue.addEvent(GameScreen.this.createEvent3_7());
+                                break;
+                        }
                     }
                 })
         ));
@@ -531,9 +539,24 @@ public class GameScreen implements Screen {
     private Event createEvent3_8() {
         return new Event(new ActionQueue(
                 new SpeechAction(erica, "(Vincent is one of my subordinates at work.)"),
-                new ConditionalAction(() -> vincent.getTrust() > 0, new SpeechAction(erica, "(He seems to trust me.)")),
-                new ConditionalAction(() -> vincent.getTrust() == 0, new SpeechAction(erica, "(I'm not sure whether he trusts me, though.)")),
-                new ConditionalAction(() -> vincent.getTrust() <= 0, new SpeechAction(erica, "(I don't think he trusts me, though.)"))
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return vincent.getTrust() > 0;
+                    }
+                }, new SpeechAction(erica, "(He seems to trust me.)")),
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return vincent.getTrust() == 0;
+                    }
+                }, new SpeechAction(erica, "(I'm not sure whether he trusts me, though.)")),
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return vincent.getTrust() <= 0;
+                    }
+                }, new SpeechAction(erica, "(I don't think he trusts me, though.)"))
         ));
     }
 
@@ -546,19 +569,27 @@ public class GameScreen implements Screen {
                 new SpeechAction(erica, "(The right to privacy, ha, what a joke.)"),
                 new SpeechAction(erica, "(And not a funny one, either.)"),
                 new SpeechAction(erica, "(If you've seen some of the documents...)"),
-                new ConditionalAction(() -> hasItem("gchq_document_01"),
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return hasItem("gchq_document_01");
+                    }
+                },
                         new AskAction(
                                 erica,
                                 "(Anyway, should I get these documents typed up?)",
                                 "Yes",
-                                "No").addListener(answerIndex -> {
-                            switch (answerIndex) {
-                                case 0:
-                                    eventQueue.addEvent(createEvent4_2());
-                                    break;
-                                case 1:
-                                    eventQueue.addEvent(createEvent5_1());
-                                    break;
+                                "No").addListener(new AnswerListener() {
+                            @Override
+                            public void onAnswer(int answerIndex) {
+                                switch (answerIndex) {
+                                    case 0:
+                                        eventQueue.addEvent(GameScreen.this.createEvent4_2());
+                                        break;
+                                    case 1:
+                                        eventQueue.addEvent(GameScreen.this.createEvent5_1());
+                                        break;
+                                }
                             }
                         }),
                         new AbstractRunOnceAction() {
@@ -606,18 +637,26 @@ public class GameScreen implements Screen {
                 new SpeechAction(erica, "(dissent is my next door neighbour, Helena.)"),
                 new SpeechAction(erica, "(She got into this before I did, but I have since been a more active part of Anomaly.)"),
                 new SpeechAction(erica, "(She seems to have been getting tired of it recently, and wants to live a normal life.)"),
-                new ConditionalAction(() -> hasItem("gchq_envelope_01"), new AskAction(
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return hasItem("gchq_envelope_01");
+                    }
+                }, new AskAction(
                         erica,
                         "Now, should I do anything with that envelope?",
                         "Open it",
                         "Dispose of it",
-                        "Do nothing").addListener(answerIndex -> {
-                    switch (answerIndex) {
-                        case 0:
-                            eventQueue.addEvent(createEvent4_5());
-                            break;
-                        case 1:
-                            eventQueue.addEvent(createEvent4_6());
+                        "Do nothing").addListener(new AnswerListener() {
+                    @Override
+                    public void onAnswer(int answerIndex) {
+                        switch (answerIndex) {
+                            case 0:
+                                eventQueue.addEvent(GameScreen.this.createEvent4_5());
+                                break;
+                            case 1:
+                                eventQueue.addEvent(GameScreen.this.createEvent4_6());
+                        }
                     }
                 }))
         ));
@@ -633,13 +672,16 @@ public class GameScreen implements Screen {
                         erica,
                         "(Anyway, should I get these documents typed up?)",
                         "Yes",
-                        "No").addListener(answerIndex -> {
-                    switch (answerIndex) {
-                        case 0:
-                            eventQueue.addEvent(createEvent4_2());
-                            break;
-                        case 1:
-                            break;
+                        "No").addListener(new AnswerListener() {
+                    @Override
+                    public void onAnswer(int answerIndex) {
+                        switch (answerIndex) {
+                            case 0:
+                                eventQueue.addEvent(GameScreen.this.createEvent4_2());
+                                break;
+                            case 1:
+                                break;
+                        }
                     }
                 }),
                 new AbstractRunOnceAction() {
@@ -669,7 +711,12 @@ public class GameScreen implements Screen {
 
     private Event createEvent5_1() {
         return new Event(new ActionQueue(
-                new ConditionalAction(() -> jeanette.getTrust() <= 0, new AbstractRunOnceAction() {
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return jeanette.getTrust() <= 0;
+                    }
+                }, new AbstractRunOnceAction() {
                     @Override
                     public void run() {
                         eventQueue.addEvent(createEvent5_2());
@@ -692,17 +739,20 @@ public class GameScreen implements Screen {
                         "Yes",
                         "Yes, but leave it on latch",
                         "No"
-                ).addListener(answerIndex -> {
-                    switch (answerIndex) {
-                        case 0:
-                            eventQueue.addEvent(createEvent5_3());
-                            break;
-                        case 1:
-                            eventQueue.addEvent(createEvent5_4());
-                            break;
-                        case 2:
-                            eventQueue.addEvent(createEvent6_1());
-                            break;
+                ).addListener(new AnswerListener() {
+                    @Override
+                    public void onAnswer(int answerIndex) {
+                        switch (answerIndex) {
+                            case 0:
+                                eventQueue.addEvent(GameScreen.this.createEvent5_3());
+                                break;
+                            case 1:
+                                eventQueue.addEvent(GameScreen.this.createEvent5_4());
+                                break;
+                            case 2:
+                                eventQueue.addEvent(GameScreen.this.createEvent6_1());
+                                break;
+                        }
                     }
                 })
         ));
@@ -722,13 +772,16 @@ public class GameScreen implements Screen {
                 new SpeechAction(jeanette, "Hello darling, I came to visit to see how you were getting on."),
                 new SpeechAction(erica, "Fine, what prompted this?"),
                 new SpeechAction(jeanette, "Oh, darling, you know, I just heard it from the grapevine."),
-                new AskAction(jeanette, "Would you mind if I had a look at how you are getting on with work recently?", "Let her look", "Don't let her look").addListener(answerIndex -> {
-                    switch (answerIndex) {
-                        case 0:
-                            eventQueue.addEvent(createEvent5_5());
-                            break;
-                        case 1:
-                            eventQueue.addEvent(createEvent5_6());
+                new AskAction(jeanette, "Would you mind if I had a look at how you are getting on with work recently?", "Let her look", "Don't let her look").addListener(new AnswerListener() {
+                    @Override
+                    public void onAnswer(int answerIndex) {
+                        switch (answerIndex) {
+                            case 0:
+                                eventQueue.addEvent(GameScreen.this.createEvent5_5());
+                                break;
+                            case 1:
+                                eventQueue.addEvent(GameScreen.this.createEvent5_6());
+                        }
                     }
                 })
         ));
@@ -771,7 +824,12 @@ public class GameScreen implements Screen {
                 new MovementAction(jeanette, 304, 128),
                 new LookAction(jeanette, "up"),
                 new WaitAction(3),
-                new ConditionalAction(random::nextBoolean, new TrustChangeAction(jeanette, 20), new TrustChangeAction(jeanette, -2)),
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return random.nextBoolean();
+                    }
+                }, new TrustChangeAction(jeanette, 20), new TrustChangeAction(jeanette, -2)),
                 new MovementAction(jeanette, 272, 128),
                 new MovementAction(jeanette, 272, 176),
                 new MovementAction(jeanette, 288, 176),
@@ -811,9 +869,24 @@ public class GameScreen implements Screen {
     private Event createEvent5_7() {
         return new Event(new ActionQueue(
                 new SpeechAction(erica, "(Jeanette is my boss from work.)"),
-                new ConditionalAction(() -> jeanette.getTrust() > 0, new SpeechAction(erica, "(She seems to trust me.)")),
-                new ConditionalAction(() -> jeanette.getTrust() == 0, new SpeechAction(erica, "(I'm not sure whether she trusts me, though.)")),
-                new ConditionalAction(() -> jeanette.getTrust() <= 0, new SpeechAction(erica, "(I don't think she trusts me, though.)")),
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return jeanette.getTrust() > 0;
+                    }
+                }, new SpeechAction(erica, "(She seems to trust me.)")),
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return jeanette.getTrust() == 0;
+                    }
+                }, new SpeechAction(erica, "(I'm not sure whether she trusts me, though.)")),
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return jeanette.getTrust() <= 0;
+                    }
+                }, new SpeechAction(erica, "(I don't think she trusts me, though.)")),
                 new AbstractRunOnceAction() {
                     @Override
                     public void run() {
@@ -836,7 +909,12 @@ public class GameScreen implements Screen {
                 new NarrativeAction(this, "\"<hypothermic> Anyway, we're getting off topic. We need to stop them from stopping GCHQ if we're to boost profits - that surveillance program could benefit us so much.\""),
                 new NarrativeAction(this, "\"<scintilla> Very well, I'll do my best, darling.\""),
                 new NarrativeAction(this, "\"scintilla (scintilla@users.undernet.org) left IRC: Quit.\""),
-                new ConditionalAction(() -> humphrey.getTrust() <= 0, new AbstractRunOnceAction() {
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return humphrey.getTrust() <= 0;
+                    }
+                }, new AbstractRunOnceAction() {
                     @Override
                     public void run() {
                         eventQueue.addEvent(createEvent7_1());
@@ -854,19 +932,22 @@ public class GameScreen implements Screen {
         return new Event(new ActionQueue(
                 new NarrativeAction(this, "*The doorbell rings.*"),
                 new SpeechAction(erica, "(I'm really not sure why more people don't use that.)"),
-                new QuestionAction(this, "Answer the door?", "Yes", "Yes, but leave it on latch", "No").addListener(answerIndex -> {
-                    switch (answerIndex) {
-                        case 0:
-                            eventQueue.addEvent(createEvent7_2());
-                            break;
-                        case 1:
-                            eventQueue.addEvent(createEvent7_3());
-                            break;
-                        case 2:
-                            humphrey.setTrust(humphrey.getTrust() - 20);
-                            robyn.setTrust(robyn.getTrust() - 5);
-                            eventQueue.addEvent(createEvent8_1());
-                            break;
+                new QuestionAction(this, "Answer the door?", "Yes", "Yes, but leave it on latch", "No").addListener(new AnswerListener() {
+                    @Override
+                    public void onAnswer(int answerIndex) {
+                        switch (answerIndex) {
+                            case 0:
+                                eventQueue.addEvent(GameScreen.this.createEvent7_2());
+                                break;
+                            case 1:
+                                eventQueue.addEvent(GameScreen.this.createEvent7_3());
+                                break;
+                            case 2:
+                                humphrey.setTrust(humphrey.getTrust() - 20);
+                                robyn.setTrust(robyn.getTrust() - 5);
+                                eventQueue.addEvent(GameScreen.this.createEvent8_1());
+                                break;
+                        }
                     }
                 })
         ));
@@ -882,17 +963,20 @@ public class GameScreen implements Screen {
                 new TrustChangeAction(humphrey, 2),
                 new SpeechAction(humphrey, "Hrm, hrm, good evening Erica."),
                 new SpeechAction(humphrey, "Hrm, I have received reports that you have been acting a little out of line recently, hrm."),
-                new AskAction(humphrey, "Is this true, hrm?", "Yes, and I'll correct my behaviour immediately.", "When?", "No!").addListener(answerIndex -> {
-                    switch (answerIndex) {
-                        case 0:
-                            humphrey.setTrust(humphrey.getTrust() + 5);
-                            break;
-                        case 1:
-                            humphrey.setTrust(humphrey.getTrust() - 5);
-                            break;
-                        case 2:
-                            humphrey.setTrust(humphrey.getTrust() - 10);
-                            break;
+                new AskAction(humphrey, "Is this true, hrm?", "Yes, and I'll correct my behaviour immediately.", "When?", "No!").addListener(new AnswerListener() {
+                    @Override
+                    public void onAnswer(int answerIndex) {
+                        switch (answerIndex) {
+                            case 0:
+                                humphrey.setTrust(humphrey.getTrust() + 5);
+                                break;
+                            case 1:
+                                humphrey.setTrust(humphrey.getTrust() - 5);
+                                break;
+                            case 2:
+                                humphrey.setTrust(humphrey.getTrust() - 10);
+                                break;
+                        }
                     }
                 }),
                 new SpeechAction(humphrey, "...Hrm."),
@@ -961,17 +1045,20 @@ public class GameScreen implements Screen {
                         erica,
                         "(I could also listen to a conversation between \"evilgenius\" and \"hypothermic\", should I do so?)",
                         "Yes",
-                        "No").addListener(answerIndex -> {
-                    switch (answerIndex) {
-                        case 0:
-                            eventQueue.addEvent(createEvent9_1());
-                            break;
-                        case 1:
-                            if (humphrey.getTrust() <= 0)
-                                eventQueue.addEvent(createEvent11_1());
-                            else
-                                eventQueue.addEvent(createEvent12_1());
-                            break;
+                        "No").addListener(new AnswerListener() {
+                    @Override
+                    public void onAnswer(int answerIndex) {
+                        switch (answerIndex) {
+                            case 0:
+                                eventQueue.addEvent(GameScreen.this.createEvent9_1());
+                                break;
+                            case 1:
+                                if (humphrey.getTrust() <= 0)
+                                    eventQueue.addEvent(GameScreen.this.createEvent11_1());
+                                else
+                                    eventQueue.addEvent(GameScreen.this.createEvent12_1());
+                                break;
+                        }
                     }
                 })
         ));
@@ -1102,22 +1189,40 @@ public class GameScreen implements Screen {
                 new NarrativeAction(this, "\"<entropy> Hey, you have to get that sorted out.\""),
                 new NarrativeAction(this, "\"<disruption> Me mam says she's gettin te upgrade next month\""),
                 new NarrativeAction(this, "\"<entropy> Anyway, we have more pressing matters to talk about.\""),
-                new ConditionalAction(() -> helena.getTrust() == -100, new NarrativeAction(this, "\"<entropy> dissent is dead.\"")),
-                new ConditionalAction(() -> helena.getTrust() == -100, new NarrativeAction(this, "\"<disruption> Yer serious?\"")),
-                new ConditionalAction(() -> helena.getTrust() != -100, new NarrativeAction(this, "\"<entropy> Of course I'm serious.\"")),
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return helena.getTrust() == -100;
+                    }
+                }, new NarrativeAction(this, "\"<entropy> dissent is dead.\"")),
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return helena.getTrust() == -100;
+                    }
+                }, new NarrativeAction(this, "\"<disruption> Yer serious?\"")),
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return helena.getTrust() != -100;
+                    }
+                }, new NarrativeAction(this, "\"<entropy> Of course I'm serious.\"")),
                 new NarrativeAction(this, "\"<entropy> We have to shut down that gchq operation asap.\""),
                 new NarrativeAction(this, "\"<disruption> I gotcha.\""),
                 new SpeechAction(erica, "(I can tell he's smilling behind his screen.)"),
                 new SpeechAction(erica, "(We're going to do this tonight.)"),
                 new NarrativeAction(this, "*The doorbell rings.*"),
-                new QuestionAction(this, "Answer it?", "Yes", "No").addListener(answerIndex -> {
-                    switch (answerIndex) {
-                        case 0:
-                            eventQueue.addEvent(createEvent13_1());
-                            break;
-                        case 1:
-                            eventQueue.addEvent(createEvent13_2());
-                            break;
+                new QuestionAction(this, "Answer it?", "Yes", "No").addListener(new AnswerListener() {
+                    @Override
+                    public void onAnswer(int answerIndex) {
+                        switch (answerIndex) {
+                            case 0:
+                                eventQueue.addEvent(GameScreen.this.createEvent13_1());
+                                break;
+                            case 1:
+                                eventQueue.addEvent(GameScreen.this.createEvent13_2());
+                                break;
+                        }
                     }
                 })
         ));
@@ -1176,22 +1281,42 @@ public class GameScreen implements Screen {
 
     private Event createEvent13_3() {
         return new Event(new ActionQueue(
-                new ConditionalAction(() -> humphrey.getTrust() <= 0, new AbstractRunOnceAction() {
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return humphrey.getTrust() <= 0;
+                    }
+                }, new AbstractRunOnceAction() {
                     @Override
                     public void run() {
                         eventQueue.addEvent(createEvent14_1());
                     }
-                }, new ConditionalAction(() -> stephen.getTrust() <= 0, new AbstractRunOnceAction() {
+                }, new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return stephen.getTrust() <= 0;
+                    }
+                }, new AbstractRunOnceAction() {
                     @Override
                     public void run() {
                         eventQueue.addEvent(createEvent15_1());
                     }
-                }, new ConditionalAction(() -> robyn.getTrust() <= 0, new AbstractRunOnceAction() {
+                }, new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return robyn.getTrust() <= 0;
+                    }
+                }, new AbstractRunOnceAction() {
                     @Override
                     public void run() {
                         eventQueue.addEvent(createEvent16_1());
                     }
-                }, new ConditionalAction(() -> robyn.getTrust() >= 0, new AbstractRunOnceAction() {
+                }, new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return robyn.getTrust() >= 0;
+                    }
+                }, new AbstractRunOnceAction() {
                     @Override
                     public void run() {
                         eventQueue.addEvent(createEvent17_1());
@@ -1213,20 +1338,28 @@ public class GameScreen implements Screen {
                 new SpeechAction(erica, "(How on earth did he get in?)"),
                 new SpeechAction(stephen, "A man named Humphrey suggested I come to see you."),
                 new SpeechAction(stephen, "I heard you have been up to some somewhat... suspicious activity."),
-                new AskAction(stephen, "Have you?", "Yes", "No").addListener(answerIndex -> {
-                    switch (answerIndex) {
-                        case 0:
-                            stephen.setTrust(stephen.getTrust() + 10);
-                            stephen.say("Well, at least we can say you're honest.");
-                            break;
-                        case 1:
-                            stephen.setTrust(stephen.getTrust() - 10);
-                            humphrey.setTrust(humphrey.getTrust() - 5);
-                            stephen.say("I have reasoning to believe otherwise.");
-                            break;
+                new AskAction(stephen, "Have you?", "Yes", "No").addListener(new AnswerListener() {
+                    @Override
+                    public void onAnswer(int answerIndex) {
+                        switch (answerIndex) {
+                            case 0:
+                                stephen.setTrust(stephen.getTrust() + 10);
+                                stephen.say("Well, at least we can say you're honest.");
+                                break;
+                            case 1:
+                                stephen.setTrust(stephen.getTrust() - 10);
+                                humphrey.setTrust(humphrey.getTrust() - 5);
+                                stephen.say("I have reasoning to believe otherwise.");
+                                break;
+                        }
                     }
                 }),
-                new ConditionalAction(() -> humphrey.getTrust() <= 10, new AbstractRunOnceAction() {
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return humphrey.getTrust() <= 10;
+                    }
+                }, new AbstractRunOnceAction() {
                     @Override
                     public void run() {
                         eventQueue.addEvent(new Event(new ActionQueue(
@@ -1249,17 +1382,32 @@ public class GameScreen implements Screen {
                         eventQueue.addEvent(new Event(new ActionQueue(
                                 new SpeechAction(stephen, "Keep an eye on your actions, Erica."),
                                 new CharacterLeaveAction(stephen, GameScreen.this),
-                                new ConditionalAction(() -> stephen.getTrust() <= 0, new AbstractRunOnceAction() {
+                                new ConditionalAction(new Condition() {
+                                    @Override
+                                    public boolean isTrue() {
+                                        return stephen.getTrust() <= 0;
+                                    }
+                                }, new AbstractRunOnceAction() {
                                     @Override
                                     public void run() {
                                         eventQueue.addEvent(createEvent15_1());
                                     }
-                                }, new ConditionalAction(() -> robyn.getTrust() <= 0, new AbstractRunOnceAction() {
+                                }, new ConditionalAction(new Condition() {
+                                    @Override
+                                    public boolean isTrue() {
+                                        return robyn.getTrust() <= 0;
+                                    }
+                                }, new AbstractRunOnceAction() {
                                     @Override
                                     public void run() {
                                         eventQueue.addEvent(createEvent16_1());
                                     }
-                                }, new ConditionalAction(() -> robyn.getTrust() >= 0, new AbstractRunOnceAction() {
+                                }, new ConditionalAction(new Condition() {
+                                    @Override
+                                    public boolean isTrue() {
+                                        return robyn.getTrust() >= 0;
+                                    }
+                                }, new AbstractRunOnceAction() {
                                     @Override
                                     public void run() {
                                         eventQueue.addEvent(createEvent17_1());
@@ -1277,7 +1425,12 @@ public class GameScreen implements Screen {
                 new SpeechAction(alicia, "Hiya!"),
                 new SpeechAction(erica, "(I really have no idea how she got in, but she scares me)"),
                 new SpeechAction(alicia, "We're going to make this quick and painless, so don't ya fret!"),
-                new ConditionalAction(() -> jeanette.getTrust() >= 0, new AbstractRunOnceAction() {
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return jeanette.getTrust() >= 0;
+                    }
+                }, new AbstractRunOnceAction() {
                     @Override
                     public void run() {
                         eventQueue.addEvent(new Event(new ActionQueue(
@@ -1310,7 +1463,12 @@ public class GameScreen implements Screen {
                                                 new SpeechAction(drew, "The name's Drew."),
                                                 new NameAction(drew),
                                                 new SpeechAction(drew, "You'd do well to remember that, since it's the last name you'll be hearing."),
-                                                new ConditionalAction(() -> vincent.getTrust() >= 0, new AbstractRunOnceAction() {
+                                                new ConditionalAction(new Condition() {
+                                                    @Override
+                                                    public boolean isTrue() {
+                                                        return vincent.getTrust() >= 0;
+                                                    }
+                                                }, new AbstractRunOnceAction() {
                                                     @Override
                                                     public void run() {
                                                         eventQueue.addEvent(new Event(new ActionQueue(
@@ -1322,7 +1480,12 @@ public class GameScreen implements Screen {
                                                                 new MovementAction(vincent, 288, 448),
                                                                 new WaitAction(2),
                                                                 new CharacterLeaveAction(vincent, GameScreen.this),
-                                                                new ConditionalAction(() -> robyn.getTrust() >= 0, new AbstractRunOnceAction() {
+                                                                new ConditionalAction(new Condition() {
+                                                                    @Override
+                                                                    public boolean isTrue() {
+                                                                        return robyn.getTrust() >= 0;
+                                                                    }
+                                                                }, new AbstractRunOnceAction() {
                                                                     @Override
                                                                     public void run() {
                                                                         eventQueue.addEvent(createEvent16_1());
@@ -1391,14 +1554,18 @@ public class GameScreen implements Screen {
 
     private Event createEvent16_1() {
         return new Event(new ActionQueue(
-                new ConditionalAction(() -> robyn.getTrust() >= 0, new AbstractRunOnceAction() {
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return robyn.getTrust() >= 0;
+                    }
+                }, new AbstractRunOnceAction() {
                     @Override
                     public void run() {
                         if (vincent.getTrust() >= 3) {
                             eventQueue.addEvent(new Event(new ActionQueue(
                                     new SpeechAction(vincent, "Good evening Miss Erica, I came to drop off the documents you requested."),
                                     new SpeechAction(erica, "Thank you, Vincent."),
-                                    new NameAction(vincent),
                                     new NarrativeAction(GameScreen.this, "*Erica takes the documents from Vincent and places them on her desk*"),
                                     new MovementAction(erica, 288, 176),
                                     new MovementAction(erica, 272, 176),
@@ -1436,8 +1603,18 @@ public class GameScreen implements Screen {
                 new NarrativeAction(this, "\"<disruption> Top o' the mornin' to ye, entropy\""),
                 new NarrativeAction(this, "\"<entropy> Good morning, disruption.\""),
                 new NarrativeAction(this, "\"<entropy> And what a morning it's been.\""),
-                new ConditionalAction(() -> hasItem("gchq_document_01") && hasItem("gchq_document_02"), new NarrativeAction(this, "\"<entropy> I have the documents. They launch today, so we should be able to take them down.\""), new NarrativeAction(this, "--- SATISFACTORY ENDING. Thanks for playing. ---")),
-                new ConditionalAction(() -> hasItem("gchq_document_01") && hasItem("gchq_document_02"), new AbstractRunOnceAction() {
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return GameScreen.this.hasItem("gchq_document_01") && GameScreen.this.hasItem("gchq_document_02");
+                    }
+                }, new NarrativeAction(this, "\"<entropy> I have the documents. They launch today, so we should be able to take them down.\""), new NarrativeAction(this, "--- SATISFACTORY ENDING. Thanks for playing. ---")),
+                new ConditionalAction(new Condition() {
+                    @Override
+                    public boolean isTrue() {
+                        return GameScreen.this.hasItem("gchq_document_01") && GameScreen.this.hasItem("gchq_document_02");
+                    }
+                }, new AbstractRunOnceAction() {
                     @Override
                     public void run() {
                         eventQueue.addEvent(createEvent18_1());
