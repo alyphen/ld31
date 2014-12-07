@@ -833,7 +833,7 @@ public class GameScreen implements Screen {
                 new MovementAction(jeanette, 272, 128),
                 new MovementAction(jeanette, 272, 176),
                 new MovementAction(jeanette, 288, 176),
-                new MovementAction(jeanette, 288, 432),
+                new MovementAction(jeanette, 288, 448),
                 new MovementAction(erica, 288, 176),
                 new MovementAction(erica, 272, 176),
                 new MovementAction(erica, 272, 128),
@@ -1567,22 +1567,21 @@ public class GameScreen implements Screen {
                                     new SpeechAction(vincent, "Good evening Miss Erica, I came to drop off the documents you requested."),
                                     new SpeechAction(erica, "Thank you, Vincent."),
                                     new NarrativeAction(GameScreen.this, "*Erica takes the documents from Vincent and places them on her desk*"),
-                                    new MovementAction(erica, 288, 176),
-                                    new MovementAction(erica, 272, 176),
                                     new MovementAction(erica, 272, 128),
-                                    new MovementAction(erica, 304, 128),
+                                    new MovementAction(erica, 272, 176),
+                                    new MovementAction(erica, 288, 176),
+                                    new MovementAction(erica, 288, 448),
                                     new LookAction(erica, "up"),
-                                    new MovementAction(vincent, 288, 360),
-                                    new MovementAction(erica, 272, 128),
-                                    new MovementAction(erica, 272, 176),
                                     new MovementAction(erica, 288, 176),
-                                    new MovementAction(erica, 288, 344),
+                                    new MovementAction(erica, 272, 176),
+                                    new MovementAction(erica, 272, 128),
+                                    new MovementAction(erica, 288, 128),
                                     new ObtainItemAction(GameScreen.this, "gchq_document_02"),
                                     new SpeechAction(vincent, "I, uh, remember that's some sensitive information, Miss, so be careful what you do with it."),
                                     new AbstractRunOnceAction() {
                                         @Override
                                         public void run() {
-                                            eventQueue.addEvent(createEvent18_1());
+                                            eventQueue.addEvent(createEvent17_1());
                                         }
                                     }
                             )));
