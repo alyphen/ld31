@@ -8,11 +8,11 @@ import io.github.alyphen.ld31.objects.characters.GameCharacter;
 public class AskAction extends CharacterAction {
 
     private String text;
-    private String[] answers;
+    private Array<String> answers;
     private Question question;
     private Array<AnswerListener> listeners;
 
-    public AskAction(GameCharacter character, String text, String... answers) {
+    public AskAction(GameCharacter character, String text, Array<String> answers) {
         super(character);
         this.text = text;
         this.answers = answers;

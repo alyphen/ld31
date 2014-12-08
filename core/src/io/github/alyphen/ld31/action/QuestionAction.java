@@ -9,11 +9,11 @@ public class QuestionAction extends Action {
 
     private GameScreen game;
     private String text;
-    private String[] answers;
+    private Array<String> answers;
     private Question question;
     private Array<AnswerListener> listeners;
 
-    public QuestionAction(GameScreen game, String text, String... answers) {
+    public QuestionAction(GameScreen game, String text, Array<String> answers) {
         this.game = game;
         this.text = text;
         this.answers = answers;

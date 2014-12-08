@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.utils.Array;
 import io.github.alyphen.ld31.message.Message;
 import io.github.alyphen.ld31.message.Question;
 import io.github.alyphen.ld31.screen.GameScreen;
@@ -620,7 +621,7 @@ public class LD31 extends Game {
 		return game.showMessage(message);
 	}
 
-	public Question showQuestion(String message, String... answers) {
+	public Question showQuestion(String message, Array<String> answers) {
 		return game.showQuestion(message, answers);
 	}
 

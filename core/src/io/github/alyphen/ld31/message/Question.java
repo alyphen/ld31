@@ -7,9 +7,9 @@ public class Question extends Message {
     private Array<String> answers;
     private Array<AnswerListener> listeners;
 
-    public Question(String text, String... answers) {
+    public Question(String text, Array<String> answers) {
         super(text);
-        this.answers = new Array<>(answers);
+        this.answers = answers;
         listeners = new Array<>();
     }
 

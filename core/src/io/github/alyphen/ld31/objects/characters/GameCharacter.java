@@ -2,6 +2,7 @@ package io.github.alyphen.ld31.objects.characters;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.utils.Array;
 import io.github.alyphen.ld31.LD31;
 import io.github.alyphen.ld31.message.Message;
 import io.github.alyphen.ld31.message.Question;
@@ -81,7 +82,7 @@ public class GameCharacter extends GameObject {
         return game.showMessage((isNameKnown() ? getName() : "?") + ": " + text);
     }
 
-    public Question ask(String text, String... answers) {
+    public Question ask(String text, Array<String> answers) {
         return game.showQuestion((isNameKnown() ? getName() : "?") + ": " + text, answers);
     }
 

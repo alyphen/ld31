@@ -7,8 +7,8 @@ public class ActionQueue {
     private Array<Action> actions;
     private int actionIndex;
 
-    public ActionQueue(Action... actions) {
-        this.actions = new Array<>(actions);
+    public ActionQueue(Array<Action> actions) {
+        this.actions = actions;
     }
 
     public void addAction(Action action) {
